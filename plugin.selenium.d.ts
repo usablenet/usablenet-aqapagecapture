@@ -61,6 +61,7 @@ declare class AQAPageCapturePluginCore {
 }
 declare class AQAPageCapturePlugin extends AQAPageCapturePluginCore {
 	private readonly driver;
+	private readonly chromeVariable;
 	constructor(driver: ExtendedWebDriver, options: AQAPageCapturePluginOptions);
 	static init(driver: WebDriver, options: AQAPageCapturePluginOptions): Promise<AQAPageCapturePlugin>;
 	initNetworkConnection(): Promise<void>;

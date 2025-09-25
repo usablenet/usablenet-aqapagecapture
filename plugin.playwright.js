@@ -60,7 +60,7 @@ var DeviceId;
 class AQAPageCapturePluginCore {
     constructor(options) {
         this.extensionID = 'llaaiankjgnonjipogopofnpahaoccfo';
-        this.version = '1.1';
+        this.version = '1.2';
         this.devices = {
             '1280x1024': models_Devices__WEBPACK_IMPORTED_MODULE_0__/* .DeviceId */ ._.DESKTOP_1,
             '1366x668': models_Devices__WEBPACK_IMPORTED_MODULE_0__/* .DeviceId */ ._.DESKTOP_2,
@@ -70,7 +70,7 @@ class AQAPageCapturePluginCore {
             CREATE_FLOW: 'Unable to create flow',
             CREATE_FLOW_WITH_NAME: 'Unable to create flow with name ',
             CREATE_FLOW_MISSING_NAME: 'Missing name param on createFlow',
-            EXTENSION_NOT_FOUND: 'Chrome extension not available. Ensure it has been correctly loaded using with --load-extension option',
+            EXTENSION_NOT_FOUND: 'Chrome extension not available. Ensure it has been correctly loaded in the browser.',
             SNAPSHOT: 'Unable to generate page snapshot',
             UNABLE_TO_CONNECT: 'Unable to connect to the AQAPageCapture extension',
             UPLOAD_ZIP: 'Unable to upload zip',
@@ -200,12 +200,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function PlaywrightSendExtensionMessage([_messageData, extensionID]) {
     // eslint-disable-next-line no-eval
     return eval(`new Promise((resolve) => {
-    if (!chrome || !chrome.runtime || !chrome.runtime.sendMessage) {
+    var chromeVar = ((chrome && chrome.runtime && chrome.runtime.sendMessage) ? chrome : window._unChrome);
+    if (!chromeVar || !chromeVar.runtime || !chromeVar.runtime.sendMessage) {
       resolve({ success: false, error: 'chrome.runtime is not defined.' });
     }
-    chrome.runtime.sendMessage("${extensionID}", ${JSON.stringify(_messageData)}, (_response) => {
-      if (chrome.runtime.lastError) {
-        resolve({ success: false, error: chrome.runtime.lastError });
+    chromeVar.runtime.sendMessage("${extensionID}", ${JSON.stringify(_messageData)}, (_response) => {
+      if (chromeVar.runtime.lastError) {
+        resolve({ success: false, error: chromeVar.runtime.lastError });
       }
       if(_response){
         resolve(_response);
@@ -246,7 +247,7 @@ class AQAPageCapturePlugin extends _plugin_core__WEBPACK_IMPORTED_MODULE_2__/* [
             this.driver.on('response', (response) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     const request = response.request();
-                    if (['font', 'image'].includes(request.resourceType()) && !request.url().startsWith('data:')) {
+                    if (['font', 'image', 'stylesheet'].includes(request.resourceType()) && !request.url().startsWith('data:')) {
                         const isFinished = yield response.finished();
                         if (isFinished === null) {
                             const body = yield response.body();
