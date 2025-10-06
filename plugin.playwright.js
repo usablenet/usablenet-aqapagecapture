@@ -200,7 +200,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function PlaywrightSendExtensionMessage([_messageData, extensionID]) {
     // eslint-disable-next-line no-eval
     return eval(`new Promise((resolve) => {
-    var chromeVar = ((chrome && chrome.runtime && chrome.runtime.sendMessage) ? chrome : window._unChrome);
+    var chromeVar = ((chrome && chrome.runtime && chrome.runtime.sendMessage) ? chrome : window._AQA_Chrome);
     if (!chromeVar || !chromeVar.runtime || !chromeVar.runtime.sendMessage) {
       resolve({ success: false, error: 'chrome.runtime is not defined.' });
     }
