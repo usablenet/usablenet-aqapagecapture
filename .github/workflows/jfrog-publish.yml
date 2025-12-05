@@ -26,6 +26,8 @@ jobs:
       - run: |
           echo "Creating package.json needed to npm publish..."
 
+          echo "version $(git describe --tags --abbrev=0)"
+
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0")
           echo "Latest tag: $LATEST_TAG"
 
