@@ -25,11 +25,10 @@ jobs:
 
       - run: |
           echo "Creating package.json needed to npm publish..."
+
+          PACKAGE_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0")
+          echo "Latest tag: $LATEST_TAG"
           
-          PACKAGE_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          
-          # Creazione di un package.json minimale
-          # Assicurati di SOSTITUIRE 'nome-del-tuo-pacchetto' con il nome NPM corretto!
           cat <<EOF > package.json
           {
             "name": "usablenet-aqapagecapture", 
