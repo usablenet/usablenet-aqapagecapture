@@ -31,7 +31,7 @@ jobs:
 
           PACKAGE_VERSION=${LATEST_TAG#v}
 
-          if [[ "$LATEST_TAG" == "v0.0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "$LATEST_TAG" == "v0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
             PACKAGE_SHA=$(echo ${{ github.sha }} | cut -c1-7)
             PACKAGE_VERSION="0.0.0-snapshot.$PACKAGE_SHA"
             echo "No tag found. We use snapshot version to push: $PACKAGE_VERSION"
