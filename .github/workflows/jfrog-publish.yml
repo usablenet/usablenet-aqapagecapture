@@ -4,6 +4,8 @@
 name: Node.js Package
 
 on:
+  push:
+    branches: [ npm-jfrog-publish ]
   release:
     types: [created]
 
