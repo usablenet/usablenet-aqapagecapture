@@ -50,7 +50,7 @@ jobs:
           
           cp plugin.playwright.js $STAGING_DIR/
           cp plugin.playwright.d.ts $STAGING_DIR/
-      - run: npm publish --access public
+      - run: npm publish
         working-directory: ${{ env.STAGING_DIR }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.JFROG_NPM_TOKEN }}
