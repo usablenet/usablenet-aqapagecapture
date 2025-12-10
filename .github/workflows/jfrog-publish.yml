@@ -41,7 +41,6 @@ jobs:
           {
             "name": "@usablenet/usablenet-aqapagecapture",
             "version": "$PACKAGE_VERSION",
-            "type": "module",
             "main": "./plugin.playwright.js",
             "types": "./plugin.playwright.d.ts",
             "exports": {
