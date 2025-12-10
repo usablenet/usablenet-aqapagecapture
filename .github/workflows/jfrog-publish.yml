@@ -4,8 +4,8 @@
 name: Node.js Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: ['main']
 
 jobs:
   publish-jfrog:
@@ -16,6 +16,9 @@ jobs:
       
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -24,12 +27,12 @@ jobs:
       - run: |
           echo "Creating package.json needed to npm publish..."
 
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0")
+          LATEST_TAG=$(git tag | tail -n 1 2>/dev/null || echo "v0.0.0")
           echo "Latest tag: $LATEST_TAG"
 
-          PACKAGE_VERSION=${LATEST_TAG#v}
+          PACKAGE_VERSION="${LATEST_TAG#v}.0"
 
-          if [[ "$LATEST_TAG" == "v0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "$LATEST_TAG" == "v0.0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
             PACKAGE_SHA=$(echo ${{ github.sha }} | cut -c1-7)
             PACKAGE_VERSION="0.0.0-snapshot.$PACKAGE_SHA"
             echo "No tag found. We use snapshot version to push: $PACKAGE_VERSION"
