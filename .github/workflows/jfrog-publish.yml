@@ -4,8 +4,8 @@
 name: Node.js Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: ['main']
 
 jobs:
   publish-jfrog:
@@ -13,23 +13,27 @@ jobs:
 
     env:
       STAGING_DIR: ./npm_staging
-      
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: ${{ secrets.JFROG_REGISTRY_URL }}
 
-      - run: |
+      - name: Publish playwright
+        run: |
           echo "Creating package.json needed to npm publish..."
 
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0")
+          LATEST_TAG=$(git tag | tail -n 1 2>/dev/null || echo "v0.0.0")
           echo "Latest tag: $LATEST_TAG"
 
-          PACKAGE_VERSION=${LATEST_TAG#v}
+          PACKAGE_VERSION="${LATEST_TAG#v}.0"
 
-          if [[ "$LATEST_TAG" == "v0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "$LATEST_TAG" == "v0.0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
             PACKAGE_SHA=$(echo ${{ github.sha }} | cut -c1-7)
             PACKAGE_VERSION="0.0.0-snapshot.$PACKAGE_SHA"
             echo "No tag found. We use snapshot version to push: $PACKAGE_VERSION"
@@ -37,7 +41,7 @@ jobs:
           
           cat <<EOF > package.json
           {
-            "name": "@usablenet/usablenet-aqapagecapture",
+            "name": "@usablenet-public/usablenet-aqapagecapture-playwright",
             "version": "$PACKAGE_VERSION",
             "main": "./plugin.playwright.js",
             "types": "./plugin.playwright.d.ts",
@@ -55,14 +59,62 @@ jobs:
           }
           EOF
           echo "package.json created with version: $PACKAGE_VERSION"
-      - run: |
+          
           echo "Processing files for publishing in $STAGING_DIR..."
           mkdir -p $STAGING_DIR
-          
+
           mv package.json $STAGING_DIR/
-          
+
           cp plugin.playwright.js $STAGING_DIR/
           cp plugin.playwright.d.ts $STAGING_DIR/
+      - run: npm publish
+        working-directory: ${{ env.STAGING_DIR }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.JFROG_NPM_TOKEN }}
+
+      - name: Publish selenium
+        run: |
+          echo "Creating package.json needed to npm publish..."
+
+          LATEST_TAG=$(git tag | tail -n 1 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+
+          PACKAGE_VERSION="${LATEST_TAG#v}.0"
+
+          if [[ "$LATEST_TAG" == "v0.0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
+            PACKAGE_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+            PACKAGE_VERSION="0.0.0-snapshot.$PACKAGE_SHA"
+            echo "No tag found. We use snapshot version to push: $PACKAGE_VERSION"
+          fi
+
+          cat <<EOF > package.json
+          {
+            "name": "@usablenet-public/usablenet-aqapagecapture-selenium",
+            "version": "$PACKAGE_VERSION",
+            "main": "./plugin.selenium.js",
+            "types": "./plugin.selenium.d.ts",
+            "exports": {
+              ".": {
+                "types": "./plugin.selenium.d.ts",
+                "import": "./plugin.selenium.js",
+                "default": "./plugin.selenium.js"
+              }
+            },
+            "files": [
+              "plugin.selenium.js",
+              "plugin.selenium.d.ts"
+            ]
+          }
+          EOF
+          echo "package.json created with version: $PACKAGE_VERSION"
+
+          echo "Processing files for publishing in $STAGING_DIR..."
+          mkdir -p $STAGING_DIR
+
+          mv package.json $STAGING_DIR/
+
+          cp plugin.selenium.js $STAGING_DIR/
+          cp plugin.selenium.d.ts $STAGING_DIR/
       - run: npm publish
         working-directory: ${{ env.STAGING_DIR }}
         env:
