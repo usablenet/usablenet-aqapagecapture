@@ -45,9 +45,9 @@ jobs:
             "main": "./plugin.playwright.js",
             "types": "./plugin.playwright.d.ts",
             "exports": {
-              "." : {
-                  "types": "./plugin.playwright.d.ts",
-                  "import" "./plugin.playwright.js"
+              ".": {
+                "types": "./plugin.playwright.d.ts",
+                "import": "./plugin.playwright.js"
               }
             },
             "files": [
