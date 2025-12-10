@@ -1,0 +1,69 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Node.js Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish-jfrog:
+    runs-on: ubuntu-latest
+
+    env:
+      STAGING_DIR: ./npm_staging
+      
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: ${{ secrets.JFROG_REGISTRY_URL }}
+
+      - run: |
+          echo "Creating package.json needed to npm publish..."
+
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0")
+          echo "Latest tag: $LATEST_TAG"
+
+          PACKAGE_VERSION=${LATEST_TAG#v}
+
+          if [[ "$LATEST_TAG" == "v0.0" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
+            PACKAGE_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+            PACKAGE_VERSION="0.0.0-snapshot.$PACKAGE_SHA"
+            echo "No tag found. We use snapshot version to push: $PACKAGE_VERSION"
+          fi
+          
+          cat <<EOF > package.json
+          {
+            "name": "@usablenet/usablenet-aqapagecapture",
+            "version": "$PACKAGE_VERSION",
+            "main": "./plugin.playwright.js",
+            "types": "./plugin.playwright.d.ts",
+            "exports": {
+              ".": {
+                "types": "./plugin.playwright.d.ts",
+                "import": "./plugin.playwright.js",
+                "default": "./plugin.playwright.js"
+              }
+            },
+            "files": [
+              "plugin.playwright.js",
+              "plugin.playwright.d.ts"
+            ]
+          }
+          EOF
+          echo "package.json created with version: $PACKAGE_VERSION"
+      - run: |
+          echo "Processing files for publishing in $STAGING_DIR..."
+          mkdir -p $STAGING_DIR
+          
+          mv package.json $STAGING_DIR/
+          
+          cp plugin.playwright.js $STAGING_DIR/
+          cp plugin.playwright.d.ts $STAGING_DIR/
+      - run: npm publish
+        working-directory: ${{ env.STAGING_DIR }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.JFROG_NPM_TOKEN }}
