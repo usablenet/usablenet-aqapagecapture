@@ -39,7 +39,8 @@ jobs:
           
           cat <<EOF > package.json
           {
-            "name": "usablenet-aqapagecapture", 
+            "name": "@usablenet/usablenet-aqapagecapture",
+            "type": "module",
             "version": "$PACKAGE_VERSION",
             "files": [
               "plugin.playwright.js",
