@@ -40,8 +40,16 @@ jobs:
           cat <<EOF > package.json
           {
             "name": "@usablenet/usablenet-aqapagecapture",
-            "type": "module",
             "version": "$PACKAGE_VERSION",
+            "type": "module",
+            "main": "./plugin.playwright.js",
+            "types": "./plugin.playwright.d.ts",
+            "exports": {
+              "." : {
+                  "types": "./plugin.playwright.d.ts",
+                  "import" "./plugin.playwright.js"
+              }
+            },
             "files": [
               "plugin.playwright.js",
               "plugin.playwright.d.ts"
