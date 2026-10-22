@@ -1,1 +1,1 @@
-function doSnapshot(){const t=document.createElement("a");return t.href="",{url:t.href,html:window._AQAExt_?window._AQAExt_.Snapshotter.run():""}}doSnapshot();
+function doSnapshot(n){const t=document.createElement("a");t.href="";const o=window._AQAExt_?window._AQAExt_.Snapshotter.run(n):{};return{url:t.href,...o}}doSnapshot(__OPTIONS__);

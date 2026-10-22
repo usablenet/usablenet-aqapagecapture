@@ -1,0 +1,1 @@
+performance.setResourceTimingBufferSize(1e4);

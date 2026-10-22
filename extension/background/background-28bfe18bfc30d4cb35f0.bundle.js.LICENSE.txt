@@ -9,9 +9,3 @@ Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/js
 JSZip uses the library pako released under the MIT license :
 https://github.com/nodeca/pako/blob/main/LICENSE
 */
-
-/*! https://mths.be/quoted-printable v1.0.1 by @mathias | MIT license */
-
-/*! https://mths.be/utf8js v2.1.2 by @mathias */
-
-/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */

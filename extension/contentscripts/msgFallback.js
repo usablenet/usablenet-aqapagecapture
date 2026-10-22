@@ -1,1 +1,0 @@
-chrome.runtime.onMessage.addListener(((e,r,n)=>{n({error:"not-handled"})}));
