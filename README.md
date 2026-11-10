@@ -52,7 +52,7 @@ Then, in the test:
 1. `init()` the plugin, right after the browser opens;
 2. `createFlow()`, before navigating to the first page to capture;
 3. `doSnapshot()` on each page to capture;
-4. `uploadZip()`.
+4. `uploadZip()`; with `flowId` and `a11yTestId` given to `init()`, AQA then runs the a11y test on the updated flow.
 
 ### Init the plugin
 
@@ -63,14 +63,19 @@ api key and the suite the flow is uploaded to.
 import AQAPageCapturePlugin from 'AQAPageCapture/plugin.[playwright|selenium]';
 
 const aqaPageCapture = await AQAPageCapturePlugin.init(driver, {
-  suite: 'aqa-suite-id',
+  suiteId: 'TS989',
   team: 'aqa-team-id',
   xTeam: 'your-api-key',
-  testId: 'test-id', // optional: set it to update an existing test.
+  flowId: 'T4693', // optional: set it to update an existing flow instead of creating one.
+  a11yTestId: 'A4369-0', // optional, with flowId: the a11y test AQA runs on the updated flow once it is uploaded.
   ignoreErrors: false, // optional, false by default: when true, the plugin logs its errors instead of throwing them.
   disarm: false, // optional, false by default: when true, the plugin does nothing.
 });
 ```
+
+The ids are AQA's: the suite's (`TS989`), the flow's (`T4693`) and the a11y test's (`A4369-0`). `suite` and `testId`,
+the names of `suiteId` and `flowId` up to 2.0, still work; when both names of one option are given, the new one is
+used.
 
 `driver` is the Selenium [WebDriver](https://www.selenium.dev/documentation/webdriver/), or the Playwright
 [Page](https://playwright.dev/docs/api/class-page) the test starts on.
@@ -156,6 +161,26 @@ await aqaPageCapture.uploadZip();
 `downloadFlowSnapshot()` is not supported: it throws an error saying so. `uploadZip()` is how the flow is
 delivered.
 
+#### Run an a11y test on the uploaded flow
+
+Give `init()` the flow to update as `flowId` and the a11y test as `a11yTestId`, as the AQA API names it in the
+run's url (`A4369-0`). Once `uploadZip()` has updated the flow, AQA runs the test on it, and the plugin logs the flow's id
+and the url of the run's page in AQA:
+
+```
+AQAPageCapture: ...done! flow T4693
+AQAPageCapture: a11y test A4369-0 started on flow T4693: https://aqa.usablenet.com/audit/aqa-team-id/suites/TS989/a11yMonitors/A4369-1792678425976
+```
+
+AQA runs the test only on a flow the upload **updates**. With `a11yTestId` but no `flowId`, the upload creates the
+flow and the plugin skips the test, logging a warning saying so; the upload itself goes through. When AQA's answer to a
+run names no run id, the plugin logs the whole answer instead.
+
+A run AQA refuses fails `uploadZip()` after the upload, with a message that quotes AQA's answer and says the flow was
+uploaded: it is on AQA, so do not upload it again. AQA may also answer `status_not_compatible`, naming a status
+(`collecting`) it does not start a run in: the message says so, and the run can be asked for again once the status has
+changed. With `ignoreErrors`, a refused run is logged and the test goes on.
+
 ## Examples
 
 ### Selenium
@@ -182,7 +207,7 @@ describe('a test', function () {
 
   it('captures the UsableNet home page', async () => {
     const aqaPageCapture = await AQAPageCapturePlugin.init(driver, {
-      suite: 'TS123',
+      suiteId: 'TS123',
       team: 'myTeam',
       xTeam: 'myKey',
     });
@@ -225,7 +250,7 @@ export const test = base.extend<{ context: BrowserContext }>({
 
 test('captures the UsableNet home page', async ({ page }) => {
   const aqaPageCapture = await AQAPageCapturePlugin.init(page, {
-    suite: 'TS123',
+    suiteId: 'TS123',
     team: 'myTeam',
     xTeam: 'myKey',
   });

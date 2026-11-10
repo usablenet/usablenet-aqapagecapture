@@ -66,6 +66,7 @@ export interface ChromeExtMsgUploadToAqa {
 		xTeam: string;
 		description?: string;
 		testId?: string;
+		a11yTestId?: string;
 	};
 }
 export type ChromeExternalMessagePayload = ChromeExtMsgCreateFlow | ChromeExtMsgDoSnapshot | ChromeExtMsgDownload | ChromeExtMsgHealthCheck | ChromeExtMsgStart | ChromeExtMsgUploadToAqa;
@@ -81,14 +82,40 @@ export interface ChromeExtResponseHealthCheck {
 	protocol?: number;
 	version?: string;
 }
+export interface AqaTestRun {
+	id?: string;
+	time?: number;
+}
+export type AqaTestRunResult = {
+	started: true;
+	run: AqaTestRun;
+	url?: string;
+} | {
+	started: false;
+	error: string;
+};
+export interface ChromeExtResponseUploaded {
+	success: true;
+	flowId: string;
+	testRun?: AqaTestRunResult;
+}
 export type ChromeExtResponse = ChromeExtResponseError | ChromeExtResponseSuccess;
-export type AQAPageCapturePluginOptions = Pick<ChromeExtMsgUploadToAqa["payload"], "suite" | "team" | "xTeam"> & {
+export type AQAPageCaptureSuiteOption = {
+	suiteId: string;
+	suite?: string;
+} | {
+	suiteId?: undefined;
+	suite: string;
+};
+export type AQAPageCapturePluginOptions = Pick<ChromeExtMsgUploadToAqa["payload"], "team" | "xTeam"> & AQAPageCaptureSuiteOption & {
+	flowId?: string;
 	testId?: string;
+	a11yTestId?: string;
 	disarm?: boolean;
 	ignoreErrors?: boolean;
 };
 export type DeviceLabel = PluginDeviceLabel;
-export type ExtensionReply = ChromeExtResponse | ChromeExtResponseHealthCheck | null;
+export type ExtensionReply = ChromeExtResponse | ChromeExtResponseHealthCheck | ChromeExtResponseUploaded | null;
 declare abstract class AQAPageCapturePluginCore {
 	protected static readonly BRANDS_SCRIPT = "(navigator.userAgentData && navigator.userAgentData.brands || []).map(function (b) { return b.brand; })";
 	protected static readonly PAGE_VIEWPORT_SCRIPT: string;
@@ -101,6 +128,7 @@ declare abstract class AQAPageCapturePluginCore {
 		CREATE_FLOW_MISSING_NAME: string;
 		EXTENSION_NOT_FOUND: string;
 		EXTENSION_NOT_ANSWERING: string;
+		RUN_TEST: string;
 		SNAPSHOT: string;
 		UNABLE_TO_CONNECT: string;
 		UPLOAD_ZIP: string;
@@ -114,6 +142,7 @@ declare abstract class AQAPageCapturePluginCore {
 	constructor(options: AQAPageCapturePluginOptions);
 	static nameTimeStamp(): string;
 	static log(msg: string): void;
+	static warn(msg: string): void;
 	throwError(message: string): void;
 	createFlow(options: {
 		name: string;

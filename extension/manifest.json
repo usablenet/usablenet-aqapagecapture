@@ -1,6 +1,6 @@
 {
   "name": "UsableNet PageCapture for automated tools",
-  "version": "2.0.0.10431",
+  "version": "2.1.0.42465",
   "manifest_version": 3,
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhZL8qv9ZoOMkBe+YBsqOF0QangGh237+6IxUKaV8YYax2LpA0l2BKGSK9JBesMQAKOn0AOfPETEjD9wthU8aILFhcC26YJD80U3ytymz2dlNkUsAlhWwPoKYjBqb2Ft2b6KtGI7AlrfAPRlRZwDfvp6aduU4Zd/odf9EX6F9ldn41g+nNnDGkR1ZV0dIhhPOcpZwl0LKnW49Aa6vz6jozs1PrwNNdmRbVgU99nMQfneVvttDOoZUGy5V/EdAOB3TJvgfP8Tju8YW4PeUQT3X7mFY0TVwIByrVtWWc5UJljhEq52U0fk0NYy1lqJvZQlWxdpCv5ddB8hOb6DRwhZ60QIDAQAB",
   "description": "Capture web pages to be processed by UsableNet AQA from automated testing tools",
@@ -9,7 +9,7 @@
     "128": "icons/icon-128x128.png"
   },
   "background": {
-    "service_worker": "background/background-28bfe18bfc30d4cb35f0.bundle.js"
+    "service_worker": "background/background-a5e14dae1a405350e4bf.bundle.js"
   },
   "host_permissions": [
     "<all_urls>"
@@ -60,5 +60,5 @@
       "<all_urls>"
     ]
   },
-  "version_name": "2.0.0"
+  "version_name": "2.1.0"
 }
